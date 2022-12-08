@@ -1,23 +1,21 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 export function Todo({todo, onRemoveTodo, onMarkTodoAsCompleted, onSaveTodo}) {
+    const editInput = useRef(null);
     const [editMode, setEditMode] = useState(false);
-    const input1Ref = useRef(todo.title);
+    useEffect(() => {
+        editInput.current.focus();
+    }, [editMode])
 
     function handelOutOfFocus(event) {
         onSaveTodo(event.target.value, todo);
         setEditMode(!editMode);
     }
 
-    const handelDoubleClick = () => {
-        setEditMode(!editMode);
-        input1Ref.current.focus();
-    }
-
     return (
         <li className={`${editMode ? 'editing' : ''} ${todo.completed ? 'completed' : ''}`}>
             <div className="view"
-                 onDoubleClick={handelDoubleClick}>
+                 onDoubleClick={() => setEditMode(!editMode)}>
                 <input className="toggle"
                        type="checkbox"
                        checked={todo.completed}
@@ -30,7 +28,8 @@ export function Todo({todo, onRemoveTodo, onMarkTodoAsCompleted, onSaveTodo}) {
             </div>
             <input className="edit"
                    onBlur={handelOutOfFocus}
-                   ref={input1Ref}
+                   ref={editInput}
+                   defaultValue={todo.title}
             />
         </li>
     );
